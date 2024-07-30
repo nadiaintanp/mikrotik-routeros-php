@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  web:
+    build: 
+      context: .
+    container_name: mikrotik_routeros
+    restart: always
+    environment:
+      - TZ=Asia/Jakarta
+      - APPLICATION_PATH=/app
+    ports:
+      - 8001:80
+    volumes:
+      - ./web:/app
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+  
+  db:
+    image: mysql:8.0.32
+    container_name: mikrotik_routeros_db
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - TZ=Asia/Jakarta
+      - MYSQL_ROOT_PASSWORD=admin2000
+      - MYSQL_DATABASE=mikrotik
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin2000
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
